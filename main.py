@@ -46,6 +46,8 @@ class Alert:
 
 
 last_version = None
+
+
 @tasks.loop(seconds=5)
 async def check_for_updates(queue: queue.Queue, logger: logging.Logger):
     global last_version
