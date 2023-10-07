@@ -56,7 +56,10 @@ async def check_for_updates(queue: queue.Queue, logger: logging.Logger):
 
     new_content = response.text
 
-    if last_version is None or new_content != last_version:
+    if last_version is None:
+        last_version = new_content
+
+    if new_content != last_version:
         alert_raw = new_content
         alert_raw_list: list = json.loads(alert_raw)
         first_alert_raw = alert_raw_list[0]
