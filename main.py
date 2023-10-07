@@ -83,6 +83,8 @@ async def check_for_updates(queue: queue.Queue, logger: logging.Logger):
         last_version = new_content
         for channel_id in channels:
             channel = bot.get_channel(channel_id)
+            if channel is None:
+                continue
             await channel.send(ret_str)
             await asyncio.sleep(0.01)
 
@@ -162,6 +164,7 @@ async def about_bot(intr: discord.Interaction):
     e.description = 'Made by GaMeNu and yrrad8'
     e.add_field(name='Important:', value='This bot is UNOFFICIAL!\nplease refer to the official Home Front Command website at https://www.oref.org.il/', inline=False)
     e.add_field(name='', value='We made this bot to help notify people of incoming missile alerts')
+    await intr.response.send_message(embed=e)
 
 @bot.event
 async def on_message(msg: discord.Message):
