@@ -21,6 +21,18 @@ class Alert:
         self.data = data
         self.category = category
 
+    def __eq__(self, other):
+        if self.time != other.time:
+            return False
+        if self.title != other.title:
+            return False
+        if self.data != other.data:
+            return False
+        if self.category != other.category:
+            return False
+        return True
+
+
     def __str__(self):
         return f'*{self.time}*\n\n__{self.title}__ ב**{self.data}**'
 
@@ -57,17 +69,22 @@ async def check_for_updates(queue: queue.Queue, logger: logging.Logger):
     logger.debug(f'sent update with response {response}')
 
     new_content = response.text
+    alert_raw_list: list = json.loads(new_content)
+    first_alert_raw = alert_raw_list[0]
+    first_alert = Alert.fromdata(first_alert_raw)
+
 
     if last_version is None:
-        last_version = new_content
+        last_version = first_alert
 
-    if new_content != last_version:
-        alert_raw = new_content
-        alert_raw_list: list = json.loads(alert_raw)
-        first_alert_raw = alert_raw_list[0]
+    if first_alert != last_version:
+        print(last_version)
+        last_version = first_alert
+
         datetime = Alert.parse_date(first_alert_raw['alertDate'])
-        alert_list = [Alert.fromdata(first_alert_raw)]
+        alert_list = [first_alert]
         alert_raw_list = alert_raw_list[1::]
+
         for alert in alert_raw_list:
             current_datetime = Alert.parse_date(alert['alertDate'])
             if not (datetime.minute == current_datetime.minute and
@@ -85,7 +102,7 @@ async def check_for_updates(queue: queue.Queue, logger: logging.Logger):
             ret_str += '\n\n\n'
 
         gen_log.info(f'Sending notifs')
-        last_version = new_content
+
         for channel_id in channels:
             channel = bot.get_channel(channel_id)
             if channel is None:
