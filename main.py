@@ -13,13 +13,14 @@ import discord
 from discord.ext import commands, tasks
 import requests
 
-class Alert:
 
-    def __init__(self, time: datetime.datetime, title: str, data: str, category: int):
+class Alert:
+    def __init__(self, time: datetime.datetime, title: str, data: str, category: int, migun_time: int = None):
         self.time = time
         self.title = title
         self.data = data
         self.category = category
+        self.migun_time: int | None = migun_time
 
     def __eq__(self, other):
         if self.time != other.time:
@@ -32,9 +33,15 @@ class Alert:
             return False
         return True
 
-
     def __str__(self):
-        return f'*{self.time}*\n\n__{self.title}__ ב**{self.data}**'
+        ret_str = f'*{self.time}*\n__{self.title}__ ב**{self.data}**'
+        if self.migun_time != None:
+            ret_str += f'\nזמן מיגון: {self.migun_time} seconds'
+
+        return ret_str
+
+    def add_migun_time(self, migun_time: int):
+        self.migun_time = migun_time
 
     @staticmethod
     def parse_date(alert_date: str) -> datetime.datetime:
@@ -59,6 +66,14 @@ class Alert:
 
 last_version = None
 
+districts: list[dict] =json.loads(requests.get('https://www.oref.org.il//Shared/Ajax/GetDistricts.aspx').text)
+
+
+def get_district(name: str) -> dict | None:
+    for district in districts:
+        if district["label"] == name:
+            return district
+    return None
 
 @tasks.loop(seconds=5)
 async def check_for_updates(queue: queue.Queue, logger: logging.Logger):
@@ -72,7 +87,6 @@ async def check_for_updates(queue: queue.Queue, logger: logging.Logger):
     alert_raw_list: list = json.loads(new_content)
     first_alert_raw = alert_raw_list[0]
     first_alert = Alert.fromdata(first_alert_raw)
-
 
     if last_version is None:
         last_version = first_alert
@@ -93,7 +107,13 @@ async def check_for_updates(queue: queue.Queue, logger: logging.Logger):
                     datetime.month == current_datetime.month and
                     datetime.year == current_datetime.year):
                 break
-            alert_list.append(Alert.fromdata(alert))
+            alert = Alert.fromdata(alert)
+            district = get_district(alert.data)
+            migun_time = None
+            if district != None:
+                migun_time = district.get('migun_time')
+                alert.add_migun_time(migun_time)
+            alert_list.append(alert)
 
         ret_str = ''
 
@@ -185,8 +205,9 @@ async def about_bot(intr: discord.Interaction):
     e.title = 'Home Front Command Notificator'
     e.description = 'Made by GaMeNu and yrrad8'
     e.add_field(name='Important:', value='This bot is UNOFFICIAL!\nplease refer to the official Home Front Command website at https://www.oref.org.il/', inline=False)
-    e.add_field(name='', value='We made this bot to help notify people of incoming missile alerts')
+    e.add_field(name='', value='We made this bot to help notify people of incoming missile alerts', inline=False)
     e.add_field(name='Source Code:', value='https://github.com/GaMeNu/HFCContacter')
+    e.add_field(name='Feedback', value='Please DM suggestions and bug reports to @gamenu on Discord')
     await intr.response.send_message(embed=e)
 
 @bot.event
