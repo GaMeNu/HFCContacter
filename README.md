@@ -6,9 +6,23 @@ This bot requests the latest alarm history from the [HFC website](https://www.or
 
 > Please note that the bot may **not always be up to date**! Please follow the official [HFC website](https://www.oref.org.il) at https://www.oref.org.il for the latest and most up-to-date info and alerts.
 
+## Commands
+
+### /register
+Register a channel to receive notifications in it
+
+### /unregister
+Remove a channel from the notification list
+
+### /latest
+Get 10 latest alerts
+
+### /about
+Info about the bot
+
 ## Self-hosting
 
-Sync bot commands by typing `/sync_cmds`  (requires you to be bot author)
+Sync bot commands by sending `/sync_cmds` to a channel with the bot (requires you to be bot author)
 
 ### .env format
 ```env
