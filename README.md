@@ -1,5 +1,9 @@
-# HomeFrontCommand notificator bot
+# HomeFrontCommand notificator bot (DEPRECATED)
 ## Made by GaMeNu and yrrad8
+
+**NOTICE:** This bot is DEPRECATED! I have decided to rewrite most of the bot to use SQLite for better data organization. I will run the old version until the new version is ready.
+
+Link to new repo: https://github.com/GaMeNu/HFCNotificator
 
 We made a bot to notify whenever an attack/missile strike/terrorist infiltration happens in Israel.
 This bot requests the latest alarm history from the [HFC website](https://www.oref.org.il) and pushes a notification whenever it notices a change.
