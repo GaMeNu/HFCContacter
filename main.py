@@ -36,7 +36,7 @@ class Alert:
     def __str__(self):
         ret_str = f'*{self.time}*\n__{self.title}__ ב**{self.data}**'
         if self.migun_time != None:
-            ret_str += f'\nזמן מיגון: {self.migun_time} seconds'
+            ret_str += f'\nזמן מיגון: **{self.migun_time} שניות**'
 
         return ret_str
 
