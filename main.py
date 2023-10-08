@@ -169,6 +169,7 @@ async def about_bot(intr: discord.Interaction):
     e.description = 'Made by GaMeNu and yrrad8'
     e.add_field(name='Important:', value='This bot is UNOFFICIAL!\nplease refer to the official Home Front Command website at https://www.oref.org.il/', inline=False)
     e.add_field(name='', value='We made this bot to help notify people of incoming missile alerts')
+    e.add_field(name='Source Code:', value='https://github.com/GaMeNu/HFCContacter')
     await intr.response.send_message(embed=e)
 
 @bot.event
