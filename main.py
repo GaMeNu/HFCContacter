@@ -4,11 +4,9 @@ import json
 import logging
 import os
 import threading
-import time
 import dotenv
 import queue
 
-import aiohttp
 import discord
 from discord.ext import commands, tasks
 import requests
@@ -35,7 +33,7 @@ class Alert:
 
     def __str__(self):
         ret_str = f'*{self.time}*\n__{self.title}__ ב**{self.data}**'
-        if self.migun_time != None:
+        if self.migun_time is not None:
             ret_str += f'\nזמן מיגון: **{self.migun_time} שניות**'
 
         return ret_str
@@ -66,7 +64,7 @@ class Alert:
 
 last_version = None
 
-districts: list[dict] =json.loads(requests.get('https://www.oref.org.il//Shared/Ajax/GetDistricts.aspx').text)
+districts: list[dict] = json.loads(requests.get('https://www.oref.org.il//Shared/Ajax/GetDistricts.aspx').text)
 
 
 def get_district(name: str) -> dict | None:
@@ -97,6 +95,9 @@ async def check_for_updates(queue: queue.Queue, logger: logging.Logger):
 
         datetime = Alert.parse_date(first_alert_raw['alertDate'])
         alert_list = [first_alert]
+        first_alert_district = get_district(first_alert.data)
+        if first_alert_district is not None:
+            first_alert.add_migun_time(first_alert_district.get('migun_time'))
         alert_raw_list = alert_raw_list[1::]
 
         for alert in alert_raw_list:
@@ -109,8 +110,7 @@ async def check_for_updates(queue: queue.Queue, logger: logging.Logger):
                 break
             alert = Alert.fromdata(alert)
             district = get_district(alert.data)
-            migun_time = None
-            if district != None:
+            if district is not None:
                 migun_time = district.get('migun_time')
                 alert.add_migun_time(migun_time)
             alert_list.append(alert)
