@@ -1,7 +1,8 @@
 # HomeFrontCommand notificator bot (DEPRECATED)
 ## Made by GaMeNu and yrrad8
 
-**NOTICE:** This bot is DEPRECATED! I have decided to rewrite most of the bot to use SQLite for better data organization. I will run the old version until the new version is ready.
+**NOTICE:** This bot is DEPRECATED and thus has been archived! I have decided to rewrite most of the bot to use MySQL for better data organization.
+The old version will still be running on the  my version of the bot until the new version is ready.
 
 Link to new repo: https://github.com/GaMeNu/HFCNotificator
 
